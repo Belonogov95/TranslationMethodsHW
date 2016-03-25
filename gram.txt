@@ -1,0 +1,33 @@
+
+
+OR  = XOR % OR | XOR
+XOR = AND % XOR ^ AND
+AND = TERM % AND & TERM
+TERM = n % (OR) % !TERM
+
+/*NEG = TERM % !TERM*/
+
+============================
+                            FIRST           FOLLOW
+OR = XOR A'                 n, (, !         ), $
+A' = | XOR A' % eps         |, E            ), $
+
+XOR = AND B'                n, (, !         |, ), $
+B' = ^ AND B' %  eps        ^, E            |, ), $
+
+AND = TERM C'               n, (, !         ^, ), $
+C' = & TERM C' % eps        &, E            ^, ), $
+
+TERM = n % (OR) % !TERM     n, (, !         &, ), $
+
+
+
+
+
+
+
+
+
+
+
+
