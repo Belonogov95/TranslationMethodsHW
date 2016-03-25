@@ -15,10 +15,10 @@ A' = | XOR A' % eps         |, E            ), $
 XOR = AND B'                n, (, !         |, ), $
 B' = ^ AND B' %  eps        ^, E            |, ), $
 
-AND = TERM C'               n, (, !         ^, ), $
-C' = & TERM C' % eps        &, E            ^, ), $
+AND = TERM C'               n, (, !         |, ^, ), $
+C' = & TERM C' % eps        &, E            |, ^, ), $
 
-TERM = n % (OR) % !TERM     n, (, !         &, ), $
+TERM = n % (OR) % !TERM     n, (, !         |, ^, &, ), $
 
 
 

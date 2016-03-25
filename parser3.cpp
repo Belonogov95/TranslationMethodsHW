@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <bitset>
+#include <stdarg.h>
 
 using namespace std;
 
@@ -94,6 +95,7 @@ struct Node {
     }
 };
 
+
 struct Parser {
     LexicalAnalyzer lex;
 
@@ -107,56 +109,121 @@ struct Parser {
             Node * tmp = parseOR();
             assert(lex.getToken() == RPAREN);
             lex.next();
-            return tmp;
+            return new Node("TERM", 3, new Node("TOPEN", 0), tmp, new Node("TCLOSE", 0));
         } 
         if (lex.getToken() == NOT) {
             lex.next();
             Node * tmp = parseTerm();
-            return new Node("NOT", 1, tmp);
+            return new Node("TERM", 2, new Node("TNOT", 0), tmp);
         }
         if (lex.getToken() == VAR) {
             string v = lex.getVar();
             lex.next();
-            return new Node(v);
+            return new Node("TERM", 1, new Node(v, 0));
         }
+        //db(lex.getToken());
         assert(false);
     }
 
-    Node * parseAND() {
-        Node * res = parseTerm();
-        while (lex.getToken() == AND) {
+    Node * parseCPrime() {
+        if (lex.getToken() == AND) {
             lex.next();
-            res = new Node("AND", res, parseTerm());
-        } 
-        return res;
+            Node * v = parseTerm();
+            Node * u = parseCPrime();
+            return new Node("CPrime", 3, new Node("TAND", 0), v, u);
+        }
+        else {
+            auto t = lex.getToken();
+            assert(t == XOR || t == OR || t == RPAREN || t == END);
+            return new Node("Bprime", 0);
+        }
+    }
+
+    Node * parseAND() {
+        Node * v = parseTerm();
+        Node * u = parseCPrime();
+        return new Node("AND", 2, v, u);
+    }
+
+    Node * parseBPrime() {
+        if (lex.getToken() == XOR) {
+            lex.next();
+            Node * v = parseAND();
+            Node * u = parseBPrime();
+            return new Node("BPrime", 3, new Node("TXOR", 0), v, u);
+        }
+        else {
+            auto t = lex.getToken();
+            assert(t == OR || t == RPAREN || t == END);
+            return new Node("BPrime", 0);
+        }
     }
 
     Node * parseXOR() {
-        Node * res = parseAND();
-        while (lex.getToken() == XOR) {
+        Node * v = parseAND();
+        Node * u = parseBPrime();
+        return new Node("XOR", 2, v, u);
+    }
+
+    Node * parseAPrime() {
+        if (lex.getToken() == OR) {
             lex.next();
-            res = new Node("XOR", res, parseAND());
+            Node * v = parseXOR();
+            Node * u = parseAPrime();
+            return new Node("APrime", 3, new Node("TOR", 0), v, u);
         }
-        return res;
+        else {
+            assert(lex.getToken() == RPAREN || lex.getToken() == END);
+            return new Node("APrime", 0);
+        }
     }
 
     Node * parseOR() {
-        Node * res = parseXOR();
-        while (lex.getToken() == OR) {
-            lex.next();
-            res = new Node("OR", res, parseXOR());
-        }
-        return res;
+        Node * v = parseXOR();
+        Node * u = parseAPrime();
+        return new Node("OR", 2, v, u);
     }
 };
 
-void print(Node * v, int tab) {
-    if (v == NULL) return;
-    print(v->r, tab + 1);
-    for (int i = 0; i < tab; i++)
-        cerr << "\t";
-    cerr << v->type << endl;
-    print(v->l, tab + 1);
+//void print(Node * v, int tab) {
+    //if (v == NULL) return;
+    //print(v->r, tab + 1);
+    //for (int i = 0; i < tab; i++)
+        //cerr << "\t";
+    //cerr << v->type << endl;
+    //print(v->l, tab + 1);
+//}
+
+
+set < string > used;
+
+
+void rec(Node * v, string name, int h) {
+    //db(h);
+    //assert(h < 100);
+    //db(v->ch.size());
+    for (auto u: v->ch) {
+        string g = u->type;
+        //if (u->ch.empty()) continue;
+        for (int i = 1; ; i++) {
+            string tmp = g + to_string(i);
+            if (used.count(tmp) == 0) {
+                cout << "\t" + name + "->" + tmp << endl;
+                cout << "\t" + tmp + "[label=" + g + "]" << endl; 
+                if (islower(g[0]))
+                    cout << "\t" + tmp + "[shape=box,style=filled,color=green]" << endl; 
+                if (g[0] == 'T' && g != "TERM")
+                    cout << "\t" + tmp + "[shape=box,style=filled,color=grey]" << endl; 
+                if (g == "AND") cout << "\t" + tmp + "[style=filled,color=red]" << endl; 
+                if (g == "OR") cout << "\t" + tmp + "[style=filled,color=blue]" << endl; 
+                if (g == "XOR") cout << "\t" + tmp + "[style=filled,color=yellow]" << endl; 
+
+                used.insert(tmp);
+                rec(u, tmp, h + 1);
+                break;
+            }
+        }
+    }  
 }
 
 void read() {
@@ -164,7 +231,12 @@ void read() {
     getline(cin, s);
     Parser parser(s);
     Node * head = parser.parseOR();
-    print(head, 0);
+    cout << "digraph G {\n"; 
+    rec(head, head->type, 0);
+    cout << "}\n";
+
+    //Node * head = parser.parseOR();
+    //print(head, 0);
 }
 
 void solve() {
@@ -179,7 +251,7 @@ void stress() {
 int main(){
 #ifdef DEBUG
     freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
+    freopen("out", "w", stdout);
 #endif
     if (1) {
         int k = 1;

@@ -1,0 +1,8 @@
+digraph parser { 
+    a -> b; 
+    b -> c;
+    b -> d;
+    d -> a;
+    eeee->a
+}
+
