@@ -1,0 +1,12 @@
+
+                 &    &       FIRST    &       FOLLOW \\ \hline
+B & B A'             &    n, (, !    &     ), $ \\ \hline
+A' & \\| B A' \% eps   &      \|, E    &        ), $ \\ \hline
+B & C B'             &   n, (, !     &    \|, ), $ \\ \hline
+B' & \\^ C B' \%  eps &       \^, E    &        \|, ), $ \\ \hline
+C & D C'             &  n, (, !      &   \^, ), $ \\ \hline
+C' & \& D C' \% eps  &      &, E     &       \^, ), $ \\ \hline
+D & n \% (B) \% !D   &  n, (, !      &   &, ), $ \\ \hline
+
+
+

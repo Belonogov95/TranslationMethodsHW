@@ -199,9 +199,6 @@ set < string > used;
 
 
 void rec(Node * v, string name, int h) {
-    //db(h);
-    //assert(h < 100);
-    //db(v->ch.size());
     for (auto u: v->ch) {
         string g = u->type;
         //if (u->ch.empty()) continue;
