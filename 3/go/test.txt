@@ -1,0 +1,12 @@
+
+
+
+myPrint:: Integer -> Integer
+myPrint b | b > 0 = (printf("%d\n", b))
+myPrint c | c < 0 = (printf("%d\n", -c))
+
+
+main :: Integer
+f g = myPrint(9)
+
+
