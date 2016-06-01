@@ -1,0 +1,193 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}    %% 3
+\usepackage{cmap}
+
+
+
+\title{hwReport}
+\author{belonogov95 }
+\date{March 2016}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+%\maketitle
+
+
+
+
+\section{Исходная грамматика}
+
+  %1 & 2 & 3 \\ \hline
+   %4 & 5 & 6 \\ \hline
+   %7 & 8 & 9 \\
+
+Стартоный терминал $OR$
+\begin{center}
+\begin{tabular}{ | c | c | }
+    \hline
+     Нетерминал & Правило  \\ \hline
+    $OR$ & $OR$ `|' $XOR$ | $XOR$  \\ \hline
+    $XOR$ & $XOR$ `\textasciicircum'  $AND$  | $AND$ \\ \hline
+
+    $AND$ & $AND$ `\&' $TERM$  | $TERM$ \\ \hline
+
+    $TERM$ & `n'  | `('$OR$`)' | `!'$TERM$ \\ \hline
+
+\end{tabular}
+\end{center}
+
+
+
+\begin{center}
+\begin{tabular}{ | c | c | }
+    \hline
+     Нетерминал &  Значение \\ \hline
+    $OR$  &  выражение это нескольких $XOR$-ов, связанных через `or' \\ \hline
+    $XOR$ & $XOR$ это из нескольких $AND$-ов, связанных через `$XOR$' \\ \hline
+
+    $AND$ & $AND$ это нескольких термов, связанных через `$AND$'\\ \hline
+
+    $TERM$ & term это число, или выражение в скобках, или отрицание \\ \hline
+
+\end{tabular}
+\end{center}
+
+
+
+\section{Грамматика без левой рекурсии}
+
+Стартоный терминал $OR$
+
+\begin{center}
+\begin{tabular}{ | c | c | c | c | }
+    \hline
+    Нетерминал &  Правило          &      $FIRST$    &     $FOLLOW$ \\ \hline
+    $OR$          &  $XOR$ $ORPrime$                                      &               n ( !                 &    ) \$    \\ \hline
+    $ORPrime$     &  `|' $XOR$ $ORPrime$  | $\varepsilon$                   &  |  $\varepsilon$                   &      ) \$    \\ \hline
+
+    $XOR$         & $AND$ $XORPrime$                                       &          n ( !                      &      | ) \$   \\ \hline
+    $XORPrime$    & `\textasciicircum' $AND$ $XORPrime$ | $\varepsilon$    &  \textasciicircum   $\varepsilon$   &             | ) \$  \\ \hline
+
+    $AND$         & $TERM$ $ANDPrime$                                      &   n ( !                             &   | \textasciicircum ) \$    \\ \hline
+    $ANDPrime$    & `\&' $TERM$ $ANDPrime$ |  $\varepsilon$                &   \& $\varepsilon$                  &   |     \textasciicircum ) \$  \\ \hline
+
+    $TERM$ & `n'  | `('$OR$`)' | `!'$TERM$                                 &  n ( !                              & | \textasciicircum \& ) \$ \\ \hline
+
+
+\end{tabular}
+\end{center}
+
+
+\begin{center}
+\begin{tabular}{ | c | c | }
+    \hline
+    Нетерминал    & Значение\\ \hline
+    $OR$          &  $XOR$ и возможное продолжение $XOR$-ов       \\ \hline
+    $ORPrime$     &  продолжение $XOR$-ов      \\ \hline
+
+    $XOR$         &  $AND$ и возможное продолжение    \\ \hline
+    $XORPrime$    &  продолжение $AND$-ов  \\ \hline
+
+    $AND$         &  term и возможное продолжение    \\ \hline
+    $ANDPrime$    &  продолжение term-ов     \\ \hline
+
+    $TERM$        & term это число, или выражение в скобках, или отрицание  \\ \hline
+
+
+\end{tabular}
+\end{center}
+
+
+\section {Tecтирование} 
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+
+    \hline
+    Номер & Тест & Описание \\ \hline
+    1. & a\&b  & and       \\ \hline
+    2. & a\textasciicircum b  & xor       \\ \hline
+    3. & a|b  & or       \\ \hline
+    4. & !!!!!z   & несколько отрицаний \\ \hline
+    5. & (((a)))  & скобочки \\ \hline
+    6. & (a\&b)|c\&(d \textasciicircum !!!(e))& сложный тест  \\ \hline
+
+\end{tabular}
+\end{center}
+
+
+
+
+                            %FIRST           FOLLOW
+%OR = $XOR$ A'                 n, (, !         ), $
+%A' = | $XOR$ A' % eps         |, E            ), $
+
+%$XOR$ = $AND$ B'                n, (, !         |, ), $
+%B' = ^ $AND$ B' %  eps        ^, E            |, ), $
+
+%$AND$ = TERM C'               n, (, !         ^, ), $
+%C' = & TERM C' % eps        &, E            ^, ), $
+
+%TERM = n % (OR) % !TERM     n, (, !         &, ), $
+
+
+
+ 
+%\begin{tabular}{ | l | l | }
+  %\hline			
+    %A | B | C | D
+
+    %%A & B \% A | B \\ \hline
+    %%B & C \% B \^ C \\ \hline
+    %%C & D \% C \& D \\ \hline
+    %%D & n \% (A) \% \!D \\
+   %\hline  
+%\end{tabular}
+
+%\begin{tabular}{ | l | l | l | l | }
+  %\hline			
+
+  %\iffalse
+
+%%                 &    &       FIRST    &       FOLLOW \\ \hline
+%%B & B A\'             &    n, (, !    &     ), $ \\ \hline
+%%A' & \\| B A' \% eps   &      \|, E    &        ), $ \\ \hline
+%%B & C B'             &   n, (, !     &    \|, ), $ \\ \hline
+%%B' & \\^ C B' \%  eps &       \^, E    &        \|, ), $ \\ \hline
+%%C & D C'             &  n, (, !      &   \^, ), \ \ \ hline
+%% C ' & \& D C' \% eps  &      &, E     &       \^, ), $ \\ \hline
+%%D & n \% (B) \% !D   &  n, (, !      &   &, ),  \\ \hline
+
+%\fi
+   %\hline  
+%\end{tabular}
+
+
+%\begin{table}[]
+%\centering
+%\caption{My caption}
+%\label{my-label}
+
+
+%\begin{tabular}{lllll}
+
+ %&  &    \\
+ %&  &  &  C&  \\
+ %&  &  &  ac&  \\
+ %&  &  &  & 
+%\end{tabular}
+%\end{table}
+
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
+
+
+
+

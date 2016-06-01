@@ -1,0 +1,12 @@
+
+
+isPrime:: Integer -> Integer -> Integer
+isPrime a b | (a * a > b) = printf("YES\n")
+isPrime a b | (b % a > 0) = isPrime(a + 1, b)
+isPrime a b = printf("NO\n")
+
+
+main :: Integer
+main = isPrime(2, 7) 
+
+

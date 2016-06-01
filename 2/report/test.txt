@@ -1,0 +1,13 @@
+                            FIRST           FOLLOW
+OR = XOR ORPrime                 n, (, !         ), $
+ORPrime = | XOR ORPrime % eps         |, E            ), $
+
+XOR = AND XORPrime                n, (, !         |, ), $
+XORPrime = ^ AND XORPrime %  eps        ^, E            |, ), $
+
+AND = TERM ANDPrime               n, (, !         ^, ), $
+ANDPrime = & TERM ANDPrime % eps        &, E            ^, ), $
+
+TERM = n % (OR) % !TERM     n, (, !         &, ), $
+
+
