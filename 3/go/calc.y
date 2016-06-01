@@ -44,9 +44,7 @@ int yylex(void);
 input: allCode { 
     cout << "#include <bits/stdc++.h>\n\n";
     cout << "using namespace std;\n\n";
-
     cout << *($1.code);
-
 };
 
 allCode:  { $$.code = new string(); } 

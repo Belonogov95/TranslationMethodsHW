@@ -1,7 +1,3 @@
-/* Mini Calculator */
-/* calc.y */
-
-%{
 #include <bits/stdc++.h>
 
 #define YYSTYPE int
@@ -38,50 +34,8 @@ int createNode(Node v) {
 
 int head = -1;
 
-%}
-
-%token OR
-%token AND
-%token NOT
-%token LETTER
-%token XOR
-%token LEFTB
-%token RIGHTB
-
-
-/*%left   EQ*/
-
-%%
-
-
-input: or { head = $1; db("HHHHHHHHHHH"); } ;
-
-or: xor orprime { $$ = createNode(Node("OR", 2, $1, $2)); };
-
-
-orprime:   { $$ = createNode(Node("ORPrime", 0)); }
-	   | OR xor orprime  { $$ =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), $2, $3)); }
-	   ;
-
-
-xor: and xorprime { $$ = createNode(Node("XOR", 2, $1, $2)); };
-
-xorprime:  { $$ = createNode(Node("XORPrime", 0)); }
-	   	| XOR and xorprime  { $$ = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), $2, $3)); }
-		;
-
-and: term andprime {$$ = createNode(Node("AND", 2, $1, $2)); };
-
-
-andprime:  { $$ = createNode(Node("ANDPrime", 0)); }
-		| AND term andprime { $$ = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), $2, $3)); }
-		;	
-
-term: LETTER { $$ = createNode(Node("TERM", 1, createNode(Node(string(1, $1), 0)))); }
-   	| LEFTB or RIGHTB { $$ = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), $2, createNode(Node("TCLOSE", 0)))); }
-	| NOT term { $$ = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), $2)); }
-	;
-%%
+//////////////////////////////////
+//////////////////////////////////
 
 #include <ctype.h>
 
