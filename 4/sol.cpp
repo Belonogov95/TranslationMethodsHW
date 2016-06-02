@@ -38,8 +38,13 @@ const string var = "var_";
 struct Rule {
 	string name;
 	string code;
+	vector < pair < int, string > > allch;
 	vector < string > ch;
-	Rule(string name, string code, vector < string > ch): name(name), code(code), ch(ch) { }
+	Rule(string name, string code, vector < pair < int, string > > allch): name(name), code(code), allch(allch) {
+  		for (auto x: allch) 
+			if (x.fr == 1)
+				ch.pb(x.sc);
+	}
 };
 
 
@@ -103,6 +108,27 @@ vector < string > split(string s, int (*f)(int)) {
 	return res;
 }
 
+vector < pair < int, string > > splitRule(string s) {
+	size_t l = s.find("{");
+	size_t r = s.find("}");
+	//db2(l, r);
+	if (l == string::npos) {
+		auto tmp = split(s, isspace);	
+		vector < pair < int, string > > res;
+		for (auto x: tmp)
+			res.pb(mp(1, x));
+		return res;
+	}
+	assert(l < r);
+	string code = trim(s.substr(l + 1, r - l - 1));
+	auto r1 = splitRule(s.substr(0, l));
+	auto r2 = splitRule(s.substr(r + 1, (int)s.size() - (r + 1)));
+	r1.pb(mp(2, code));
+	r1.insert(r1.end(), r2.begin(), r2.end());
+	return r1;
+
+}
+
 vector < Rule > makeRule(string s) {
 	int p = s.find(":");
 	string name = trim(s.substr(0, p));
@@ -111,14 +137,23 @@ vector < Rule > makeRule(string s) {
 	
 	auto tmp = split(s, [](int ch) {return (int)(ch == '|');});
 	for (auto h: tmp) {
-		int l = h.find("{");
-		int r = h.find("}");
-		string code = h.substr(l + 1, r - l - 1);
-		db("before");
-		code = trim(code);
-		db(code);
-		auto ch = split(h.substr(0, l), isspace);
-		res.pb(Rule(name, code, ch));
+		//int l = h.find("{");
+		//int r = h.find("}");
+		//string code = h.substr(l + 1, r - l - 1);
+		//db("before");
+		//code = trim(code);
+		//db(code);
+		//auto ch = split(h.substr(0, l), isspace);
+		auto g = splitRule(h);
+		//for (auto x: g)
+		//db2(x.fr, x.sc);
+
+		assert(g.back().fr == 2);
+		string code = g.back().sc;
+		g.pop_back();
+		if (name == "or")
+			db2("!!!!!!!!!!!!!!", s);
+		res.pb(Rule(name, code, g));
 	}	
 	return res;
 }
@@ -134,7 +169,9 @@ bool isTerm(string s) { bool flagU = 1;
 	for (auto ch: s)
 		flagL &= (islower(ch) > 0);
 
+	db(s);
 	assert(flagL != flagU);
+
 	return flagU;
 }
 
@@ -236,15 +273,22 @@ void solve() {
 	//db2(tk, tk.size());
 	//return ;
 	int shiftId = 1900;
+	string inher_data_type;
+	const string inh_name = "parent";
+	const string inh = "inh_";
 	for (auto s: part2) {
 		if (startsWith(s, "%token")) {
-			db(s);
+			//db(s);
 			auto g = split(s, isspace);
-			db(g[0]);
-			db(g[1]);
+			//db(g[0]);
+			//db(g[1]);
 			assert(g.size() == 2);
 			cout << "const int " << g[1] << " = " << shiftId << ";\n";
 			shiftId++;
+		}
+		if (startsWith(s, "DATA_TYPE")) {
+			auto g = split(s, isspace);
+			inher_data_type = g[1];
 		}
 	}
 	cout << "const int DOLLAR = 0;\n";
@@ -291,33 +335,37 @@ void solve() {
 	term.insert(DOLLAR);
 
 
-
-	for (auto x: rules) {
-		db3(x.name, x.code, x.ch.size());
-		//for (auto y: x.ch)
-			//cerr << y << " ";
+	//cerr << "XXXXXXXXXXXXXXXX\n";
+	//for (auto x: rules) {
+		//db3(x.name, x.code, x.ch.size());
+		//for (auto y: x.allch)
+			//cerr << "[" << y.fr << ", " << y.sc << "]" << " ";
 		//cerr << endl;
-	}
+		////for (auto y: x.ch)
+			////cerr << "[" << y << "]" << " ";
+		////cerr << endl;
+	//}
+	//cerr << "XXXXXXXXXXXXXXXX\n";
 
 	genFirst();
 	
-	for (auto x: first) {
-		cerr << x.fr << " <-> ";
-		for (auto y: x.sc)
-			cerr << y << " ";
-		cerr << endl;
-	}
+	//for (auto x: first) {
+		//cerr << x.fr << " <-> ";
+		//for (auto y: x.sc)
+			//cerr << y << " ";
+		//cerr << endl;
+	//}
 
 
-	cerr << endl;
+	//cerr << endl;
 	genFollow();
 
-	for (auto x: follow) {
-		cerr << x.fr << " <-> ";
-		for (auto y: x.sc)
-			cerr << y << " ";
-		cerr << endl;
-	}
+	//for (auto x: follow) {
+		//cerr << x.fr << " <-> ";
+		//for (auto y: x.sc)
+			//cerr << y << " ";
+		//cerr << endl;
+	//}
 
 
 	cout << endl;
@@ -327,11 +375,11 @@ void solve() {
 	cout << "}\n\n";
 
 	for (auto x: notTerm)
-		cout << "int " << pref + x << "();\n\n";
+		cout << "int " << pref + x << "(" + inher_data_type + " " + inh_name + ");\n\n";
 
 
 	for (auto nterm: notTerm) {
-		cout << "int " << pref + nterm << "() {\n";
+		cout << "int " << pref + nterm << "(" + inher_data_type + " " + inh_name + ") {\n";
 		for (auto y: term) {
 			vector < int > id;	
 			for (int i = 0; i < (int)rules.size(); i++) {
@@ -352,19 +400,40 @@ void solve() {
 				cout << "\tif (curToken == " << y << ") {\n";
 				int iter = 0;
 				string tmp = rules[id[0]].code;
-				for (auto t: rules[id[0]].ch) {
-					if (isTerm(t)) {
-						cout << "\t\tassert(curToken == " << t << ");\n";
-						if (tmp.find("$" + to_string(iter + 1)) != string::npos)
-							cout << "\t\tint " + pref + var + to_string(iter + 1) << " = curValue;\n";
-						cout << "\t\tshiftCur();\n";
+				int pos = 0;
+				for (auto t: rules[id[0]].allch) {
+					if (t.fr == 1 && !isTerm(t.sc)) {
+						cout << "\t\t" + inher_data_type + " " + pref + var + inh + to_string(pos + 1) + ";\n";
+					}
+					pos++;
+				}
+
+				for (auto t: rules[id[0]].allch) {
+					if (t.fr == 1) {
+						if (isTerm(t.sc)) {
+							cout << "\t\tassert(curToken == " << t.sc << ");\n";
+							if (tmp.find("$" + to_string(iter + 1)) != string::npos)
+								cout << "\t\tint " + pref + var + to_string(iter + 1) << " = curValue;\n";
+							cout << "\t\tshiftCur();\n";
+						}
+						else {
+							cout << "\t\tint " + pref + var + to_string(iter + 1) << " = "; 
+							cout << pref + t.sc;
+							cout << "(" + pref + var + inh;
+							cout << to_string(iter + 1) + ");\n";
+						}
 					}
 					else {
-						cout << "\t\tint " + pref + var + to_string(iter + 1) << " = " << pref + t << "();\n";
+						string tmp = t.sc;
+						tmp = myReplace(tmp, "$$", inh_name);
+						for (int i = 0; i < (int)rules[id[0]].allch.size(); i++) {
+							tmp = myReplace(tmp, "$" + to_string(i + 1), pref + var + inh + to_string(i + 1));
+						}		
+						cout << "\t\t" + tmp << "\n";
 					}
 					iter++;
 				}
-				for (int i = 0; i < (int)rules[id[0]].ch.size(); i++) {
+				for (int i = 0; i < (int)rules[id[0]].allch.size(); i++) {
 					tmp = myReplace(tmp, "$" + to_string(i + 1), pref + var + to_string(i + 1));
 				}
 				const string ret = "ret";
@@ -377,8 +446,8 @@ void solve() {
 
 				cout << "\t}\n";
 			}
+			db3(nterm, y, id.size());
 			assert(id.size() <= 1);
-
 
 		}	
 
@@ -387,11 +456,10 @@ void solve() {
 		cout << "}\n\n";
 	}
 
-
 	cout << "int yyparse() {\n";
 	cout << "\tcurToken = yylex();\n";
 	cout << "\tcurValue = yylval;\n";
-	cout << "\t" + pref + start + "();\n";
+	cout << "\t" + pref + start + "(" + inher_data_type + "());\n";
 	cout << "\treturn 0;\n";
 	cout << "}\n\n";
 	cout << "//////////////////////////////////" << endl;

@@ -41,6 +41,11 @@ int createNode(Node v) {
 
 int head = -1;
 
+struct INHER_DATA {
+	int x, y;
+	string s;
+};
+
 %}
 
 %token OR
@@ -50,7 +55,11 @@ int head = -1;
 %token XOR
 %token LEFTB
 %token RIGHTB
+DATA_TYPE INHER_DATA
 
+/*__PARRENT__*/
+
+/*//or: xor orprime { $$ = createNode(Node("OR", 2, $1, $2)); };*/
 
 /*%left   EQ*/
 
@@ -59,7 +68,7 @@ int head = -1;
 
 input: or { head = $1; db("HHHHHHHHHHH"); } ;
 
-or: xor orprime { $$ = createNode(Node("OR", 2, $1, $2)); };
+or: xor { $3 = $1; } orprime { $$ = createNode(Node("OR", 2, $1, $3)); };
 
 
 orprime:   { $$ = createNode(Node("ORPrime", 0)); }
