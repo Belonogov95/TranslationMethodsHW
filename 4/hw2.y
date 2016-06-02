@@ -41,9 +41,12 @@ int createNode(Node v) {
 
 int head = -1;
 
-struct INHER_DATA {
-	int x, y;
-	string s;
+struct InhData {
+	int h;
+	InhData():h(0) { }
+	void incH() {
+		h++;
+	}
 };
 
 %}
@@ -55,7 +58,7 @@ struct INHER_DATA {
 %token XOR
 %token LEFTB
 %token RIGHTB
-DATA_TYPE INHER_DATA
+DATA_TYPE InhData 
 
 /*__PARRENT__*/
 
@@ -66,32 +69,32 @@ DATA_TYPE INHER_DATA
 %%
 
 
-input: or { head = $1; db("HHHHHHHHHHH"); } ;
+input: { $2 = $$; $2.incH(); } or { head = $2; } ;
 
-or: xor { $3 = $1; } orprime { $$ = createNode(Node("OR", 2, $1, $3)); };
+or: {$2 = $$; $2.incH(); } xor  {$4 = $$; $4.incH(); } orprime { $$ = createNode(Node("OR", 2, $2, $4)); };
 
 
 orprime:   { $$ = createNode(Node("ORPrime", 0)); }
-	   | OR xor orprime  { $$ =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), $2, $3)); }
+	   | OR {$3 = $$; $3.incH(); } xor {$5 = $$; $5.incH(); } orprime  { $$ =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), $3, $5)); }
 	   ;
 
 
-xor: and xorprime { $$ = createNode(Node("XOR", 2, $1, $2)); };
+xor: {$2 = $$; $2.incH(); } and {$4 = $$; $4.incH(); } xorprime { $$ = createNode(Node("XOR", 2, $2, $4)); };
 
 xorprime:  { $$ = createNode(Node("XORPrime", 0)); }
-	   	| XOR and xorprime  { $$ = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), $2, $3)); }
+	   	| XOR {$3 = $$; $3.incH(); } and {$5 = $$; $5.incH(); } xorprime  { $$ = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), $3, $5)); }
 		;
 
-and: term andprime {$$ = createNode(Node("AND", 2, $1, $2)); };
+and: {$2 = $$; $2.incH(); } term {$4 = $$; $4.incH(); } andprime {$$ = createNode(Node("AND", 2, $2, $4)); };
 
 
 andprime:  { $$ = createNode(Node("ANDPrime", 0)); }
-		| AND term andprime { $$ = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), $2, $3)); }
+		| AND {$3 = $$; $3.incH(); } term {$5 = $$; $5.incH(); } andprime { $$ = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), $3, $5)); }
 		;	
 
-term: LETTER { $$ = createNode(Node("TERM", 1, createNode(Node(string(1, $1), 0)))); }
-   	| LEFTB or RIGHTB { $$ = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), $2, createNode(Node("TCLOSE", 0)))); }
-	| NOT term { $$ = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), $2)); }
+term: LETTER { $$ = createNode(Node("TERM", 1, createNode(Node(string(1, $1), 0)))); db2(parent.h, (char)($1)); }
+   	| LEFTB {$3 = $$; $3.incH(); } or RIGHTB { $$ = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), $3, createNode(Node("TCLOSE", 0)))); }
+	| NOT {$3 = $$; $3.incH(); } term { $$ = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), $3)); }
 	;
 %%
 

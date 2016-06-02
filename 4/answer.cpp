@@ -37,9 +37,12 @@ int createNode(Node v) {
 
 int head = -1;
 
-struct INHER_DATA {
-	int x, y;
-	string s;
+struct InhData {
+	int h;
+	InhData():h(0) { }
+	void incH() {
+		h++;
+	}
 };
 
 //////////////////////////////////
@@ -57,50 +60,56 @@ void shiftCur() {
 	curValue = yylval;
 }
 
-int vv_and(INHER_DATA parent);
+int vv_and(InhData parent);
 
-int vv_andprime(INHER_DATA parent);
+int vv_andprime(InhData parent);
 
-int vv_input(INHER_DATA parent);
+int vv_input(InhData parent);
 
-int vv_or(INHER_DATA parent);
+int vv_or(InhData parent);
 
-int vv_orprime(INHER_DATA parent);
+int vv_orprime(InhData parent);
 
-int vv_term(INHER_DATA parent);
+int vv_term(InhData parent);
 
-int vv_xor(INHER_DATA parent);
+int vv_xor(InhData parent);
 
-int vv_xorprime(INHER_DATA parent);
+int vv_xorprime(InhData parent);
 
-int vv_and(INHER_DATA parent) {
+int vv_and(InhData parent) {
 	assert(curToken != AND);
 	assert(curToken != DOLLAR);
 	if (curToken == LEFTB) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_term(vv_var_inh_1);
-		int vv_var_2 = vv_andprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_term(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_andprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("AND", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == LETTER) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_term(vv_var_inh_1);
-		int vv_var_2 = vv_andprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_term(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_andprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("AND", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == NOT) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_term(vv_var_inh_1);
-		int vv_var_2 = vv_andprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_term(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_andprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("AND", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	assert(curToken != OR);
@@ -109,16 +118,18 @@ int vv_and(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_andprime(INHER_DATA parent) {
+int vv_andprime(InhData parent) {
 	if (curToken == AND) {
-		INHER_DATA vv_var_inh_2;
-		INHER_DATA vv_var_inh_3;
+		InhData vv_var_inh_3;
+		InhData vv_var_inh_5;
 		assert(curToken == AND);
 		shiftCur();
-		int vv_var_2 = vv_term(vv_var_inh_2);
-		int vv_var_3 = vv_andprime(vv_var_inh_3);
+		vv_var_inh_3 = parent; vv_var_inh_3.incH();
+		int vv_var_3 = vv_term(vv_var_inh_3);
+		vv_var_inh_5 = parent; vv_var_inh_5.incH();
+		int vv_var_5 = vv_andprime(vv_var_inh_5);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), vv_var_2, vv_var_3));
+		vv_ret = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), vv_var_3, vv_var_5));
 		return vv_ret;
 	}
 	if (curToken == DOLLAR) {
@@ -147,28 +158,31 @@ int vv_andprime(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_input(INHER_DATA parent) {
+int vv_input(InhData parent) {
 	assert(curToken != AND);
 	assert(curToken != DOLLAR);
 	if (curToken == LEFTB) {
-		INHER_DATA vv_var_inh_1;
-		int vv_var_1 = vv_or(vv_var_inh_1);
+		InhData vv_var_inh_2;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_or(vv_var_inh_2);
 		int vv_ret = 0;
-		head = vv_var_1; db("HHHHHHHHHHH");
+		head = vv_var_2;
 		return vv_ret;
 	}
 	if (curToken == LETTER) {
-		INHER_DATA vv_var_inh_1;
-		int vv_var_1 = vv_or(vv_var_inh_1);
+		InhData vv_var_inh_2;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_or(vv_var_inh_2);
 		int vv_ret = 0;
-		head = vv_var_1; db("HHHHHHHHHHH");
+		head = vv_var_2;
 		return vv_ret;
 	}
 	if (curToken == NOT) {
-		INHER_DATA vv_var_inh_1;
-		int vv_var_1 = vv_or(vv_var_inh_1);
+		InhData vv_var_inh_2;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_or(vv_var_inh_2);
 		int vv_ret = 0;
-		head = vv_var_1; db("HHHHHHHHHHH");
+		head = vv_var_2;
 		return vv_ret;
 	}
 	assert(curToken != OR);
@@ -177,37 +191,40 @@ int vv_input(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_or(INHER_DATA parent) {
+int vv_or(InhData parent) {
 	assert(curToken != AND);
 	assert(curToken != DOLLAR);
 	if (curToken == LEFTB) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_3;
-		int vv_var_1 = vv_xor(vv_var_inh_1);
-		vv_var_inh_3 = vv_var_inh_1;
-		int vv_var_3 = vv_orprime(vv_var_inh_3);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_xor(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_orprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_3));
+		vv_ret = createNode(Node("OR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == LETTER) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_3;
-		int vv_var_1 = vv_xor(vv_var_inh_1);
-		vv_var_inh_3 = vv_var_inh_1;
-		int vv_var_3 = vv_orprime(vv_var_inh_3);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_xor(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_orprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_3));
+		vv_ret = createNode(Node("OR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == NOT) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_3;
-		int vv_var_1 = vv_xor(vv_var_inh_1);
-		vv_var_inh_3 = vv_var_inh_1;
-		int vv_var_3 = vv_orprime(vv_var_inh_3);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_xor(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_orprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_3));
+		vv_ret = createNode(Node("OR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	assert(curToken != OR);
@@ -216,7 +233,7 @@ int vv_or(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_orprime(INHER_DATA parent) {
+int vv_orprime(InhData parent) {
 	assert(curToken != AND);
 	if (curToken == DOLLAR) {
 		int vv_ret = 0;
@@ -227,14 +244,16 @@ int vv_orprime(INHER_DATA parent) {
 	assert(curToken != LETTER);
 	assert(curToken != NOT);
 	if (curToken == OR) {
-		INHER_DATA vv_var_inh_2;
-		INHER_DATA vv_var_inh_3;
+		InhData vv_var_inh_3;
+		InhData vv_var_inh_5;
 		assert(curToken == OR);
 		shiftCur();
-		int vv_var_2 = vv_xor(vv_var_inh_2);
-		int vv_var_3 = vv_orprime(vv_var_inh_3);
+		vv_var_inh_3 = parent; vv_var_inh_3.incH();
+		int vv_var_3 = vv_xor(vv_var_inh_3);
+		vv_var_inh_5 = parent; vv_var_inh_5.incH();
+		int vv_var_5 = vv_orprime(vv_var_inh_5);
 		int vv_ret = 0;
-		vv_ret =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), vv_var_2, vv_var_3));
+		vv_ret =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), vv_var_3, vv_var_5));
 		return vv_ret;
 	}
 	if (curToken == RIGHTB) {
@@ -246,18 +265,19 @@ int vv_orprime(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_term(INHER_DATA parent) {
+int vv_term(InhData parent) {
 	assert(curToken != AND);
 	assert(curToken != DOLLAR);
 	if (curToken == LEFTB) {
-		INHER_DATA vv_var_inh_2;
+		InhData vv_var_inh_3;
 		assert(curToken == LEFTB);
 		shiftCur();
-		int vv_var_2 = vv_or(vv_var_inh_2);
+		vv_var_inh_3 = parent; vv_var_inh_3.incH();
+		int vv_var_3 = vv_or(vv_var_inh_3);
 		assert(curToken == RIGHTB);
 		shiftCur();
 		int vv_ret = 0;
-		vv_ret = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), vv_var_2, createNode(Node("TCLOSE", 0))));
+		vv_ret = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), vv_var_3, createNode(Node("TCLOSE", 0))));
 		return vv_ret;
 	}
 	if (curToken == LETTER) {
@@ -265,16 +285,17 @@ int vv_term(INHER_DATA parent) {
 		int vv_var_1 = curValue;
 		shiftCur();
 		int vv_ret = 0;
-		vv_ret = createNode(Node("TERM", 1, createNode(Node(string(1, vv_var_1), 0))));
+		vv_ret = createNode(Node("TERM", 1, createNode(Node(string(1, vv_var_1), 0)))); db2(parent.h, (char)(vv_var_1));
 		return vv_ret;
 	}
 	if (curToken == NOT) {
-		INHER_DATA vv_var_inh_2;
+		InhData vv_var_inh_3;
 		assert(curToken == NOT);
 		shiftCur();
-		int vv_var_2 = vv_term(vv_var_inh_2);
+		vv_var_inh_3 = parent; vv_var_inh_3.incH();
+		int vv_var_3 = vv_term(vv_var_inh_3);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), vv_var_2));
+		vv_ret = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), vv_var_3));
 		return vv_ret;
 	}
 	assert(curToken != OR);
@@ -283,34 +304,40 @@ int vv_term(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_xor(INHER_DATA parent) {
+int vv_xor(InhData parent) {
 	assert(curToken != AND);
 	assert(curToken != DOLLAR);
 	if (curToken == LEFTB) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_and(vv_var_inh_1);
-		int vv_var_2 = vv_xorprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_and(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_xorprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("XOR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == LETTER) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_and(vv_var_inh_1);
-		int vv_var_2 = vv_xorprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_and(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_xorprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("XOR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	if (curToken == NOT) {
-		INHER_DATA vv_var_inh_1;
-		INHER_DATA vv_var_inh_2;
-		int vv_var_1 = vv_and(vv_var_inh_1);
-		int vv_var_2 = vv_xorprime(vv_var_inh_2);
+		InhData vv_var_inh_2;
+		InhData vv_var_inh_4;
+		vv_var_inh_2 = parent; vv_var_inh_2.incH();
+		int vv_var_2 = vv_and(vv_var_inh_2);
+		vv_var_inh_4 = parent; vv_var_inh_4.incH();
+		int vv_var_4 = vv_xorprime(vv_var_inh_4);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		vv_ret = createNode(Node("XOR", 2, vv_var_2, vv_var_4));
 		return vv_ret;
 	}
 	assert(curToken != OR);
@@ -319,7 +346,7 @@ int vv_xor(INHER_DATA parent) {
 	assert(false);
 }
 
-int vv_xorprime(INHER_DATA parent) {
+int vv_xorprime(InhData parent) {
 	assert(curToken != AND);
 	if (curToken == DOLLAR) {
 		int vv_ret = 0;
@@ -340,14 +367,16 @@ int vv_xorprime(INHER_DATA parent) {
 		return vv_ret;
 	}
 	if (curToken == XOR) {
-		INHER_DATA vv_var_inh_2;
-		INHER_DATA vv_var_inh_3;
+		InhData vv_var_inh_3;
+		InhData vv_var_inh_5;
 		assert(curToken == XOR);
 		shiftCur();
-		int vv_var_2 = vv_and(vv_var_inh_2);
-		int vv_var_3 = vv_xorprime(vv_var_inh_3);
+		vv_var_inh_3 = parent; vv_var_inh_3.incH();
+		int vv_var_3 = vv_and(vv_var_inh_3);
+		vv_var_inh_5 = parent; vv_var_inh_5.incH();
+		int vv_var_5 = vv_xorprime(vv_var_inh_5);
 		int vv_ret = 0;
-		vv_ret = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), vv_var_2, vv_var_3));
+		vv_ret = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), vv_var_3, vv_var_5));
 		return vv_ret;
 	}
 	assert(false);
@@ -356,7 +385,7 @@ int vv_xorprime(INHER_DATA parent) {
 int yyparse() {
 	curToken = yylex();
 	curValue = yylval;
-	vv_input(INHER_DATA());
+	vv_input(InhData());
 	return 0;
 }
 

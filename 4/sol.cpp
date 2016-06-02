@@ -151,8 +151,6 @@ vector < Rule > makeRule(string s) {
 		assert(g.back().fr == 2);
 		string code = g.back().sc;
 		g.pop_back();
-		if (name == "or")
-			db2("!!!!!!!!!!!!!!", s);
 		res.pb(Rule(name, code, g));
 	}	
 	return res;
@@ -169,7 +167,7 @@ bool isTerm(string s) { bool flagU = 1;
 	for (auto ch: s)
 		flagL &= (islower(ch) > 0);
 
-	db(s);
+	//db(s);
 	assert(flagL != flagU);
 
 	return flagU;
@@ -254,6 +252,18 @@ string myReplace(string s, string a, string b) {
 	size_t pos = s.find(a);
 	if (pos != string::npos) {
 		s = s.replace(pos, a.size(), b);	
+	}
+	return s;
+}
+
+string myReplaceMul(string s, string a, string b) {
+	while (true) {
+		size_t pos = s.find(a);
+		if (pos != string::npos) {
+			s = s.replace(pos, a.size(), b);	
+		}
+		else
+			break;
 	}
 	return s;
 }
@@ -425,16 +435,16 @@ void solve() {
 					}
 					else {
 						string tmp = t.sc;
-						tmp = myReplace(tmp, "$$", inh_name);
+						tmp = myReplaceMul(tmp, "$$", inh_name);
 						for (int i = 0; i < (int)rules[id[0]].allch.size(); i++) {
-							tmp = myReplace(tmp, "$" + to_string(i + 1), pref + var + inh + to_string(i + 1));
+							tmp = myReplaceMul(tmp, "$" + to_string(i + 1), pref + var + inh + to_string(i + 1));
 						}		
 						cout << "\t\t" + tmp << "\n";
 					}
 					iter++;
 				}
 				for (int i = 0; i < (int)rules[id[0]].allch.size(); i++) {
-					tmp = myReplace(tmp, "$" + to_string(i + 1), pref + var + to_string(i + 1));
+					tmp = myReplaceMul(tmp, "$" + to_string(i + 1), pref + var + to_string(i + 1));
 				}
 				const string ret = "ret";
 				tmp = myReplace(tmp, "$$", pref + ret);
@@ -446,7 +456,7 @@ void solve() {
 
 				cout << "\t}\n";
 			}
-			db3(nterm, y, id.size());
+			//db3(nterm, y, id.size());
 			assert(id.size() <= 1);
 
 		}	
