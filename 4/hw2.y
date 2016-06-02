@@ -12,6 +12,9 @@
 
 int yylex();
 void yyerror(char const *);
+int curToken;
+int curValue;
+int yylval;
 using namespace std;
 const int N = 1e5;
 

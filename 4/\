@@ -247,7 +247,6 @@ void solve() {
 			shiftId++;
 		}
 	}
-	cout << "const int DOLLAR = 0;\n";
 
 	string g;
 	for (auto s: part3)
@@ -288,7 +287,6 @@ void solve() {
 			else
 				notTerm.insert(s);
 	}
-	term.insert(DOLLAR);
 
 
 
@@ -319,12 +317,6 @@ void solve() {
 		cerr << endl;
 	}
 
-
-	cout << endl;
-	cout << "void shiftCur() {\n";
-	cout << "\tcurToken = yylex();\n";
-	cout << "\tcurValue = yylval;\n";
-	cout << "}\n\n";
 
 	for (auto x: notTerm)
 		cout << "int " << pref + x << "();\n\n";
@@ -357,7 +349,6 @@ void solve() {
 						cout << "\t\tassert(curToken == " << t << ");\n";
 						if (tmp.find("$" + to_string(iter + 1)) != string::npos)
 							cout << "\t\tint " + pref + var + to_string(iter + 1) << " = curValue;\n";
-						cout << "\t\tshiftCur();\n";
 					}
 					else {
 						cout << "\t\tint " + pref + var + to_string(iter + 1) << " = " << pref + t << "();\n";
@@ -392,7 +383,7 @@ void solve() {
 	cout << "\tcurToken = yylex();\n";
 	cout << "\tcurValue = yylval;\n";
 	cout << "\t" + pref + start + "();\n";
-	cout << "\treturn 0;\n";
+	cout << "\treturn;\n";
 	cout << "}\n\n";
 	cout << "//////////////////////////////////" << endl;
 	for (auto s: part4)

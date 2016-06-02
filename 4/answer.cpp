@@ -8,6 +8,9 @@
 
 int yylex();
 void yyerror(char const *);
+int curToken;
+int curValue;
+int yylval;
 using namespace std;
 const int N = 1e5;
 
@@ -35,6 +38,291 @@ int createNode(Node v) {
 int head = -1;
 
 //////////////////////////////////
+const int OR = 1900;
+const int AND = 1901;
+const int NOT = 1902;
+const int LETTER = 1903;
+const int XOR = 1904;
+const int LEFTB = 1905;
+const int RIGHTB = 1906;
+const int DOLLAR = 0;
+
+void shiftCur() {
+	curToken = yylex();
+	curValue = yylval;
+}
+
+int vv_and();
+
+int vv_andprime();
+
+int vv_input();
+
+int vv_or();
+
+int vv_orprime();
+
+int vv_term();
+
+int vv_xor();
+
+int vv_xorprime();
+
+int vv_and() {
+	assert(curToken != AND);
+	assert(curToken != DOLLAR);
+	if (curToken == LEFTB) {
+		int vv_var_1 = vv_term();
+		int vv_var_2 = vv_andprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == LETTER) {
+		int vv_var_1 = vv_term();
+		int vv_var_2 = vv_andprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == NOT) {
+		int vv_var_1 = vv_term();
+		int vv_var_2 = vv_andprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("AND", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	assert(curToken != OR);
+	assert(curToken != RIGHTB);
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_andprime() {
+	if (curToken == AND) {
+		assert(curToken == AND);
+		shiftCur();
+		int vv_var_2 = vv_term();
+		int vv_var_3 = vv_andprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ANDPrime", 3, createNode(Node("TAND", 0)), vv_var_2, vv_var_3));
+		return vv_ret;
+	}
+	if (curToken == DOLLAR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ANDPrime", 0));
+		return vv_ret;
+	}
+	assert(curToken != LEFTB);
+	assert(curToken != LETTER);
+	assert(curToken != NOT);
+	if (curToken == OR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ANDPrime", 0));
+		return vv_ret;
+	}
+	if (curToken == RIGHTB) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ANDPrime", 0));
+		return vv_ret;
+	}
+	if (curToken == XOR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ANDPrime", 0));
+		return vv_ret;
+	}
+	assert(false);
+}
+
+int vv_input() {
+	assert(curToken != AND);
+	assert(curToken != DOLLAR);
+	if (curToken == LEFTB) {
+		int vv_var_1 = vv_or();
+		int vv_ret = 0;
+		head = vv_var_1; db("HHHHHHHHHHH");
+		return vv_ret;
+	}
+	if (curToken == LETTER) {
+		int vv_var_1 = vv_or();
+		int vv_ret = 0;
+		head = vv_var_1; db("HHHHHHHHHHH");
+		return vv_ret;
+	}
+	if (curToken == NOT) {
+		int vv_var_1 = vv_or();
+		int vv_ret = 0;
+		head = vv_var_1; db("HHHHHHHHHHH");
+		return vv_ret;
+	}
+	assert(curToken != OR);
+	assert(curToken != RIGHTB);
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_or() {
+	assert(curToken != AND);
+	assert(curToken != DOLLAR);
+	if (curToken == LEFTB) {
+		int vv_var_1 = vv_xor();
+		int vv_var_2 = vv_orprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == LETTER) {
+		int vv_var_1 = vv_xor();
+		int vv_var_2 = vv_orprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == NOT) {
+		int vv_var_1 = vv_xor();
+		int vv_var_2 = vv_orprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("OR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	assert(curToken != OR);
+	assert(curToken != RIGHTB);
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_orprime() {
+	assert(curToken != AND);
+	if (curToken == DOLLAR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ORPrime", 0));
+		return vv_ret;
+	}
+	assert(curToken != LEFTB);
+	assert(curToken != LETTER);
+	assert(curToken != NOT);
+	if (curToken == OR) {
+		assert(curToken == OR);
+		shiftCur();
+		int vv_var_2 = vv_xor();
+		int vv_var_3 = vv_orprime();
+		int vv_ret = 0;
+		vv_ret =  createNode(Node("ORPrime", 3, createNode(Node("TOR", 0)), vv_var_2, vv_var_3));
+		return vv_ret;
+	}
+	if (curToken == RIGHTB) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("ORPrime", 0));
+		return vv_ret;
+	}
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_term() {
+	assert(curToken != AND);
+	assert(curToken != DOLLAR);
+	if (curToken == LEFTB) {
+		assert(curToken == LEFTB);
+		shiftCur();
+		int vv_var_2 = vv_or();
+		assert(curToken == RIGHTB);
+		shiftCur();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("TERM", 3, createNode(Node("TOPEN", 0)), vv_var_2, createNode(Node("TCLOSE", 0))));
+		return vv_ret;
+	}
+	if (curToken == LETTER) {
+		assert(curToken == LETTER);
+		int vv_var_1 = curValue;
+		shiftCur();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("TERM", 1, createNode(Node(string(1, vv_var_1), 0))));
+		return vv_ret;
+	}
+	if (curToken == NOT) {
+		assert(curToken == NOT);
+		shiftCur();
+		int vv_var_2 = vv_term();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("TERM", 2, createNode(Node("TNOT", 0)), vv_var_2));
+		return vv_ret;
+	}
+	assert(curToken != OR);
+	assert(curToken != RIGHTB);
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_xor() {
+	assert(curToken != AND);
+	assert(curToken != DOLLAR);
+	if (curToken == LEFTB) {
+		int vv_var_1 = vv_and();
+		int vv_var_2 = vv_xorprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == LETTER) {
+		int vv_var_1 = vv_and();
+		int vv_var_2 = vv_xorprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	if (curToken == NOT) {
+		int vv_var_1 = vv_and();
+		int vv_var_2 = vv_xorprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XOR", 2, vv_var_1, vv_var_2));
+		return vv_ret;
+	}
+	assert(curToken != OR);
+	assert(curToken != RIGHTB);
+	assert(curToken != XOR);
+	assert(false);
+}
+
+int vv_xorprime() {
+	assert(curToken != AND);
+	if (curToken == DOLLAR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XORPrime", 0));
+		return vv_ret;
+	}
+	assert(curToken != LEFTB);
+	assert(curToken != LETTER);
+	assert(curToken != NOT);
+	if (curToken == OR) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XORPrime", 0));
+		return vv_ret;
+	}
+	if (curToken == RIGHTB) {
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XORPrime", 0));
+		return vv_ret;
+	}
+	if (curToken == XOR) {
+		assert(curToken == XOR);
+		shiftCur();
+		int vv_var_2 = vv_and();
+		int vv_var_3 = vv_xorprime();
+		int vv_ret = 0;
+		vv_ret = createNode(Node("XORPrime", 3, createNode(Node("TXOR", 0)), vv_var_2, vv_var_3));
+		return vv_ret;
+	}
+	assert(false);
+}
+
+int yyparse() {
+	curToken = yylex();
+	curValue = yylval;
+	vv_input();
+	return 0;
+}
+
 //////////////////////////////////
 
 #include <ctype.h>
